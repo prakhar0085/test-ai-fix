@@ -6,7 +6,7 @@ def validate_password(password):
         raise ValueError("Password cannot be an empty string")
     return True
 
-def login(username, password):
+def login(user, password):
     if username is None or password is None:
         raise TypeError("Username and password cannot be None")
     try:
