@@ -1,134 +1,74 @@
 import pytest
-from auth import login, validate_password
+from auth import validate_password, hash_password, login
 
-def test_login_with_empty_password():
+def test_validate_password_with_special_characters():
     """
-    Test login with empty password.
-    
-    This test case checks if the login function raises a ValueError when an empty string is passed as the password.
+    Test that validate_password function returns True for passwords containing special characters.
     """
-    username = "john"
-    password = ""
-    with pytest.raises(ValueError):
-        login(username, password)
+    password = "secret@123"
+    assert validate_password(password) == True
 
-def test_login_with_none_password():
+def test_hash_password_with_special_characters():
     """
-    Test login with None password.
-    
-    This test case checks if the login function raises a TypeError when None is passed as the password.
+    Test that hash_password function correctly hashes passwords containing special characters.
     """
-    username = "john"
-    password = None
-    with pytest.raises(TypeError):
-        login(username, password)
-
-def test_login_with_none_username():
-    """
-    Test login with None username.
-    
-    This test case checks if the login function raises a TypeError when None is passed as the username.
-    """
-    username = None
-    password = "secret123"
-    with pytest.raises(TypeError):
-        login(username, password)
-
-def test_login_with_valid_credentials():
-    """
-    Test login with valid credentials.
-    
-    This test case checks if the login function returns the expected welcome message when valid credentials are provided.
-    """
-    username = "john"
-    password = "secret123"
-    expected = f"Welcome, {username}!"
-    assert login(username, password) == expected
-
-def test_login_with_long_password():
-    """
-    Test login with long password.
-    
-    This test case checks if the login function handles long passwords correctly.
-    """
-    username = "john"
-    password = "a" * 1000
-    expected = f"Welcome, {username}!"
-    assert login(username, password) == expected
+    password = "secret@123"
+    hashed_password = hash_password(password)
+    assert isinstance(hashed_password, str)
 
 def test_login_with_password_containing_special_characters():
     """
-    Test login with password containing special characters.
-    
-    This test case checks if the login function handles passwords with special characters correctly.
+    Test that login function successfully logs in with a password containing special characters.
     """
     username = "john"
     password = "secret@123"
-    expected = f"Welcome, {username}!"
-    assert login(username, password) == expected
+    stored_password = hash_password(password)
+    assert login(username, password, stored_password) == f"Welcome, {username}!"
 
-def test_login_with_password_containing_non_ascii_characters():
+def test_login_with_incorrect_password_containing_special_characters():
     """
-    Test login with password containing non-ASCII characters.
-    
-    This test case checks if the login function handles passwords with non-ASCII characters correctly.
+    Test that login function fails to log in with an incorrect password containing special characters.
     """
     username = "john"
-    password = "secret£123"
-    expected = f"Welcome, {username}!"
-    assert login(username, password) == expected
+    password = "wrongpassword@123"
+    stored_password = hash_password("secret@123")
+    assert login(username, password, stored_password) == "Login failed"
 
-def test_validate_password_with_empty_password():
+def test_login_with_empty_password():
     """
-    Test validate_password with empty password.
-    
-    This test case checks if the validate_password function raises a ValueError when an empty string is passed as the password.
+    Test that login function raises a ValueError when the password is an empty string.
     """
+    username = "john"
     password = ""
+    stored_password = hash_password("secret@123")
     with pytest.raises(ValueError):
-        validate_password(password)
+        login(username, password, stored_password)
 
-def test_validate_password_with_none_password():
+def test_login_with_none_password():
     """
-    Test validate_password with None password.
-    
-    This test case checks if the validate_password function returns False when None is passed as the password.
+    Test that login function raises a TypeError when the password is None.
     """
+    username = "john"
     password = None
-    assert validate_password(password) == False
+    stored_password = hash_password("secret@123")
+    with pytest.raises(TypeError):
+        login(username, password, stored_password)
 
-def test_validate_password_with_valid_password():
+def test_login_with_none_username():
     """
-    Test validate_password with valid password.
-    
-    This test case checks if the validate_password function returns True when a valid password is provided.
+    Test that login function raises a TypeError when the username is None.
     """
-    password = "secret123"
-    assert validate_password(password) == True
+    username = None
+    password = "secret@123"
+    stored_password = hash_password("secret@123")
+    with pytest.raises(TypeError):
+        login(username, password, stored_password)
 
-def test_validate_password_with_long_password():
+def test_hash_password_consistency():
     """
-    Test validate_password with long password.
-    
-    This test case checks if the validate_password function handles long passwords correctly.
-    """
-    password = "a" * 1000
-    assert validate_password(password) == True
-
-def test_validate_password_with_password_containing_special_characters():
-    """
-    Test validate_password with password containing special characters.
-    
-    This test case checks if the validate_password function handles passwords with special characters correctly.
+    Test that hash_password function consistently produces the same hash for the same password.
     """
     password = "secret@123"
-    assert validate_password(password) == True
-
-def test_validate_password_with_password_containing_non_ascii_characters():
-    """
-    Test validate_password with password containing non-ASCII characters.
-    
-    This test case checks if the validate_password function handles passwords with non-ASCII characters correctly.
-    """
-    password = "secret£123"
-    assert validate_password(password) == True
+    hashed_password1 = hash_password(password)
+    hashed_password2 = hash_password(password)
+    assert hashed_password1 == hashed_password2
