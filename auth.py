@@ -7,11 +7,11 @@ def validate_password(password):
     return True
 
 def login(user, password):
-    if username is None or password is None:
+    if user is None or password is None:
         raise TypeError("Username and password cannot be None")
     try:
         if validate_password(password):
-            return f"Welcome, {username}!"
+            return f"Welcome, {user}!"
     except ValueError as e:
         raise ValueError(str(e))
     return "Login failed"
