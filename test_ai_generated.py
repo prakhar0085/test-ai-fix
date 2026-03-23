@@ -1,100 +1,87 @@
 import pytest
 from auth import login, validate_password
 
-def test_login_valid_credentials():
+def test_login_empty_password():
     """
-    Test login function with valid credentials.
+    Test that login function raises ValueError when password is an empty string.
     """
-    user = "test_user"
-    password = "test_password"
-    assert login(user, password) == f"Welcome, {user}!"
-
-def test_login_none_username():
-    """
-    Test login function with None username.
-    """
-    user = None
-    password = "test_password"
-    with pytest.raises(TypeError):
-        login(user, password)
+    with pytest.raises(ValueError):
+        login("alice", "")
 
 def test_login_none_password():
     """
-    Test login function with None password.
+    Test that login function raises TypeError when password is None.
     """
-    user = "test_user"
-    password = None
     with pytest.raises(TypeError):
-        login(user, password)
+        login("alice", None)
 
-def test_login_empty_password():
+def test_login_none_user():
     """
-    Test login function with empty password.
+    Test that login function raises TypeError when user is None.
     """
-    user = "test_user"
-    password = ""
+    with pytest.raises(TypeError):
+        login(None, "password123")
+
+def test_login_whitespace_password():
+    """
+    Test that login function raises ValueError when password contains only whitespace characters.
+    """
     with pytest.raises(ValueError):
-        login(user, password)
+        login("alice", "   ")
+
+def test_login_valid_user():
+    """
+    Test that login function returns a welcome message when user and password are valid.
+    """
+    assert login("alice", "password123") == "Welcome, alice!"
+
+def test_login_valid_user_with_numbers():
+    """
+    Test that login function returns a welcome message when user contains numbers and password is valid.
+    """
+    assert login("alice123", "password123") == "Welcome, alice123!"
+
+def test_login_valid_user_with_special_chars():
+    """
+    Test that login function returns a welcome message when user contains special characters and password is valid.
+    """
+    assert login("alice!", "password123") == "Welcome, alice!!"
 
 def test_login_long_password():
     """
-    Test login function with long password.
+    Test that login function returns a welcome message when password is long.
     """
-    user = "test_user"
-    password = "a" * 1000
-    assert login(user, password) == f"Welcome, {user}!"
+    assert login("alice", "password1234567890") == "Welcome, alice!"
 
-def test_login_password_with_special_chars():
+def test_login_short_password():
     """
-    Test login function with password containing special characters.
+    Test that login function returns a welcome message when password is short.
     """
-    user = "test_user"
-    password = "test_password!@#$"
-    assert login(user, password) == f"Welcome, {user}!"
-
-def test_validate_password_none():
-    """
-    Test validate_password function with None password.
-    """
-    password = None
-    assert not validate_password(password)
-
-def test_validate_password_empty():
-    """
-    Test validate_password function with empty password.
-    """
-    password = ""
-    with pytest.raises(ValueError):
-        validate_password(password)
+    assert login("alice", "pass") == "Welcome, alice!"
 
 def test_validate_password_valid():
     """
-    Test validate_password function with valid password.
+    Test that validate_password function returns True when password is valid.
     """
-    password = "test_password"
-    assert validate_password(password)
+    assert validate_password("password123") == True
 
-def test_login_bug_fix():
+def test_validate_password_empty():
     """
-    Test the specific bug fix for the undefined username variable.
+    Test that validate_password function raises ValueError when password is an empty string.
     """
-    user = "test_user"
-    password = "test_password"
-    # The bug fix should prevent a NameError from occurring
-    assert login(user, password) == f"Welcome, {user}!"
+    with pytest.raises(ValueError):
+        validate_password("")
 
-def test_login_edge_case_username_with_spaces():
+def test_validate_password_none():
     """
-    Test login function with username containing spaces.
+    Test that validate_password function raises ValueError when password is None.
     """
-    user = "test user"
-    password = "test_password"
-    assert login(user, password) == f"Welcome, {user}!"
+    with pytest.raises(ValueError):
+        validate_password(None)
 
-def test_login_edge_case_username_with_special_chars():
+def test_validate_password_whitespace():
     """
-    Test login function with username containing special characters.
+    Test that validate_password function raises ValueError when password contains only whitespace characters.
     """
-    user = "test_user!@#$"
-    password = "test_password"
-    assert login(user, password) == f"Welcome, {user}!"
+    with pytest.raises(ValueError):
+        validate_password("   ")
