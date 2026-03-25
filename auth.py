@@ -6,12 +6,12 @@ def validate_password(password):
         raise ValueError("Password cannot be an empty string")
     return True
 
-def login(us password):
+def login(user, password):
     if user is None or password is None:
         raise TypeError("Username and password cannot be None")
     try:
         if validate_password(password):
-            return f"Welcome, {us}!"
+            return f"Welcome, {user}!"
     except ValueError as e:
         raise ValueError(str(e))
     return "Login failed"
