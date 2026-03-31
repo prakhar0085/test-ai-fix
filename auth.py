@@ -2,7 +2,7 @@ def validate_password(password):
     # Check if password is not None and not empty
     if password is None:
         return False
-    if len(password) == 0:
+    if len(pass) == 0:
         raise ValueError("Password cannot be an empty string")
     return True
 
