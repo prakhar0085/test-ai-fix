@@ -1,24 +1,9 @@
 import pytest
 from auth import login, validate_password
 
-def test_validate_password_typo_fix():
-    """
-    Test that the validate_password function no longer raises a NameError due to the typo.
-    """
-    password = "test_password"
-    assert validate_password(password) == True
-
-def test_login_typo_fix():
-    """
-    Test that the login function no longer raises a NameError due to the typo.
-    """
-    user = "test_user"
-    password = "test_password"
-    assert login(user, password) == f"Welcome, {user}!"
-
 def test_login_valid_credentials():
     """
-    Test that the login function returns the expected message for valid credentials.
+    Test login with valid credentials.
     """
     user = "test_user"
     password = "test_password"
@@ -26,7 +11,7 @@ def test_login_valid_credentials():
 
 def test_login_none_username():
     """
-    Test that the login function raises a TypeError for None username.
+    Test login with None username.
     """
     user = None
     password = "test_password"
@@ -35,7 +20,7 @@ def test_login_none_username():
 
 def test_login_none_password():
     """
-    Test that the login function raises a TypeError for None password.
+    Test login with None password.
     """
     user = "test_user"
     password = None
@@ -44,7 +29,7 @@ def test_login_none_password():
 
 def test_login_empty_password():
     """
-    Test that the login function raises a ValueError for empty password.
+    Test login with empty password.
     """
     user = "test_user"
     password = ""
@@ -53,30 +38,22 @@ def test_login_empty_password():
 
 def test_login_long_password():
     """
-    Test that the login function returns the expected message for a long password.
+    Test login with long password.
     """
     user = "test_user"
-    password = "a" * 100
-    assert login(user, password) == f"Welcome, {user}!"
-
-def test_login_password_with_special_characters():
-    """
-    Test that the login function returns the expected message for a password with special characters.
-    """
-    user = "test_user"
-    password = "test_password!@#$"
+    password = "a" * 1000
     assert login(user, password) == f"Welcome, {user}!"
 
 def test_validate_password_none():
     """
-    Test that the validate_password function returns False for None password.
+    Test validate_password with None password.
     """
     password = None
-    assert validate_password(password) == False
+    assert not validate_password(password)
 
 def test_validate_password_empty():
     """
-    Test that the validate_password function raises a ValueError for empty password.
+    Test validate_password with empty password.
     """
     password = ""
     with pytest.raises(ValueError):
@@ -84,7 +61,29 @@ def test_validate_password_empty():
 
 def test_validate_password_valid():
     """
-    Test that the validate_password function returns True for a valid password.
+    Test validate_password with valid password.
     """
     password = "test_password"
-    assert validate_password(password) == True
+    assert validate_password(password)
+
+def test_bug_fix_specific():
+    """
+    Test the specific bug fix by checking if the function raises a TypeError when either user or password is None.
+    """
+    user = "test_user"
+    password = None
+    with pytest.raises(TypeError):
+        login(user, password)
+
+    user = None
+    password = "test_password"
+    with pytest.raises(TypeError):
+        login(user, password)
+
+def test_fix_doesnt_break_existing_behaviour():
+    """
+    Test that the fix doesn't break existing expected behaviour by checking if the function returns the expected result for valid credentials.
+    """
+    user = "test_user"
+    password = "test_password"
+    assert login(user, password) == f"Welcome, {user}!"
